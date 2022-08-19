@@ -31,7 +31,8 @@
 				"golang.Go",
 				"esbenp.prettier-vscode",
 				"k--kato.intellij-idea-keybindings",
-				"MS-CEINTL.vscode-language-pack-de"
+				"MS-CEINTL.vscode-language-pack-de",
+				"ms-vscode.makefile-tools"
 			]
 		}
 	},
