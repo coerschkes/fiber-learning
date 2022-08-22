@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  db:
+    container_name: fiber-db
+    hostname: fiber-db
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=fiber
+      - POSTGRES_PASSWORD=fiber
+      - PGDATA=/data/postgres
+    ports:
+      - 5432:5432
+    volumes: 
+      - db:/var/lib/postgresql/data
+      - ./create-tables.sql:/docker-entrypoint-initdb.d/create-tables.sql
+volumes:
+  db:
