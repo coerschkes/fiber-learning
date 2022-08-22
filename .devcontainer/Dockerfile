@@ -16,6 +16,9 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 # USER vscode
 # RUN go get -x <your-dependency-or-tool>
 RUN go install github.com/cespare/reflex@latest
-
+RUN go get github.com/joho/godotenv
+RUN go get gorm.io/gorm
+RUN go get gorm.io/driver/postgres
+ 
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
