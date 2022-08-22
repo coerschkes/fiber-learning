@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/coerschkes/fiber-learning/config"
+	"github.com/coerschkes/fiber-learning/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -33,6 +34,8 @@ func ConnectDB() {
 	if err != nil {
 		panic("failed to connect database")
 	}
+
+	DB.AutoMigrate(&model.Note{})
 
 	fmt.Println("Connection to database " + config.LoadProperty(config.DB_HOST) + "/" + config.LoadProperty(config.DB_NAME) + " established.")
 }
