@@ -18,7 +18,7 @@ RUN go get github.com/joho/godotenv
 RUN go get gorm.io/gorm
 RUN go get gorm.io/driver/postgres
 RUN go get github.com/google/uuid
-RUN go get github.com/gofiber/fiber/v2
+# RUN go get -u github.com/gofiber/fiber/v2
 RUN go install github.com/cespare/reflex@latest
 
 # [Optional] Uncomment this line to install global node packages.
