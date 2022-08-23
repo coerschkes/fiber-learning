@@ -36,6 +36,7 @@ func ConnectDB() {
 	}
 
 	DB.AutoMigrate(&model.Note{})
+	fmt.Println("Automigration done!")
 
 	fmt.Println("Connection to database " + config.LoadProperty(config.DB_HOST) + "/" + config.LoadProperty(config.DB_NAME) + " established.")
 }
