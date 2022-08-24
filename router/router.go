@@ -10,6 +10,8 @@ import (
 func SetupRoutes(app *fiber.App, database *gorm.DB) {
 	api := app.Group("/api", logger.New())
 
+	noteRouter := noteRoutes.NewNoteRouter(database)
+
 	// Setup the Node Routes
-	noteRoutes.SetupNoteRoutes(api, database)
+	noteRouter.SetupNoteRoutes(api)
 }

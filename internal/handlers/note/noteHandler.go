@@ -1,18 +1,33 @@
 package noteHandler
 
 import (
-	"github.com/coerschkes/fiber-learning/database"
 	"github.com/coerschkes/fiber-learning/model"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-func GetNotes(c *fiber.Ctx) error {
-	db := database.DB
+type NoteHandler interface {
+	GetNotes(c *fiber.Ctx) error
+	CreateNotes(c *fiber.Ctx) error
+	GetNote(c *fiber.Ctx) error
+	UpdateNote(c *fiber.Ctx) error
+	DeleteNote(c *fiber.Ctx) error
+}
+
+type NoteHttpHandler struct {
+	database *gorm.DB
+}
+
+func NewNoteHttpHandler(database *gorm.DB) *NoteHttpHandler {
+	return &NoteHttpHandler{database}
+}
+
+func (h NoteHttpHandler) GetNotes(c *fiber.Ctx) error {
 	var notes []model.Note
 
 	// find all notes in the database
-	db.Find(&notes)
+	h.database.Find(&notes)
 
 	// If no note is present return an error
 	if len(notes) == 0 {
@@ -23,8 +38,7 @@ func GetNotes(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": notes})
 }
 
-func CreateNotes(c *fiber.Ctx) error {
-	db := database.DB
+func (h NoteHttpHandler) CreateNotes(c *fiber.Ctx) error {
 	note := new(model.Note)
 
 	// Store the body in the note and return error if encountered
@@ -35,7 +49,7 @@ func CreateNotes(c *fiber.Ctx) error {
 	// Add a uuid to the note
 	note.ID = uuid.New()
 	// Create the Note and return error if encountered
-	err = db.Create(&note).Error
+	err = h.database.Create(&note).Error
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create note", "data": err})
 	}
@@ -44,15 +58,14 @@ func CreateNotes(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "success", "message": "Created Note", "data": note})
 }
 
-func GetNote(c *fiber.Ctx) error {
-	db := database.DB
+func (h NoteHttpHandler) GetNote(c *fiber.Ctx) error {
 	var note model.Note
 
 	// Read the param noteId
 	id := c.Params("noteId")
 
 	// Find the note with the given Id
-	db.Find(&note, "id = ?", id)
+	h.database.Find(&note, "id = ?", id)
 
 	// If no such note present return an error
 	if note.ID == uuid.Nil {
@@ -63,20 +76,19 @@ func GetNote(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": note})
 }
 
-func UpdateNote(c *fiber.Ctx) error {
+func (h NoteHttpHandler) UpdateNote(c *fiber.Ctx) error {
 	type updateNote struct {
 		Title    string `json:"title"`
 		SubTitle string `json:"sub_title"`
 		Text     string `json:"Text"`
 	}
-	db := database.DB
 	var note model.Note
 
 	// Read the param noteId
 	id := c.Params("noteId")
 
 	// Find the note with the given Id
-	db.Find(&note, "id = ?", id)
+	h.database.Find(&note, "id = ?", id)
 
 	// If no such note present return an error
 	if note.ID == uuid.Nil {
@@ -96,21 +108,20 @@ func UpdateNote(c *fiber.Ctx) error {
 	note.Text = updateNoteData.Text
 
 	// Save the Changes
-	db.Save(&note)
+	h.database.Save(&note)
 
 	// Return the updated note
 	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": note})
 }
 
-func DeleteNote(c *fiber.Ctx) error {
-	db := database.DB
+func (h NoteHttpHandler) DeleteNote(c *fiber.Ctx) error {
 	var note model.Note
 
 	// Read the param noteId
 	id := c.Params("noteId")
 
 	// Find the note with the given Id
-	db.Find(&note, "id = ?", id)
+	h.database.Find(&note, "id = ?", id)
 
 	// If no such note present return an error
 	if note.ID == uuid.Nil {
@@ -118,7 +129,7 @@ func DeleteNote(c *fiber.Ctx) error {
 	}
 
 	// Delete the note and return error if encountered
-	err := db.Delete(&note, "id = ?", id).Error
+	err := h.database.Delete(&note, "id = ?", id).Error
 
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Failed to delete note", "data": nil})
