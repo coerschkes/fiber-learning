@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/coerschkes/fiber-learning/config"
 	"github.com/coerschkes/fiber-learning/database"
 	"github.com/coerschkes/fiber-learning/router"
 	"github.com/gofiber/fiber/v2"
@@ -9,9 +10,9 @@ import (
 func main() {
 	app := fiber.New()
 
-	database.ConnectDB()
+	database := database.DatabaseConnector.Connect(database.NewPostgresConnector())
 
-	router.SetupRoutes(app)
+	router.SetupRoutes(app, database)
 
-	app.Listen(":3000")
+	app.Listen(config.LoadProperty(config.SERVER_PORT))
 }
