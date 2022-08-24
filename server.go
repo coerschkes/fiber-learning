@@ -14,5 +14,5 @@ func main() {
 
 	router.SetupRoutes(app, database)
 
-	app.Listen(config.LoadProperty(config.SERVER_PORT))
+	app.Listen(":" + config.LoadProperty(config.SERVER_PORT))
 }
