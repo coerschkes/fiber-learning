@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/coerschkes/fiber-learning/database"
+	"github.com/coerschkes/fiber-learning/router"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -10,9 +11,7 @@ func main() {
 
 	database.ConnectDB()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	router.SetupRoutes(app)
 
 	app.Listen(":3000")
 }
