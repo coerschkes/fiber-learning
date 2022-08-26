@@ -26,7 +26,7 @@ func (c PostgresConnector) Connect() *gorm.DB {
 		panic("failed to connect database")
 	}
 
-	DB.AutoMigrate(&model.Note{})
+	DB.AutoMigrate(&model.Note{}, &model.User{})
 
 	log.Println("Connection to database " + config.LoadProperty(config.DB_HOST) + "/" + config.LoadProperty(config.DB_NAME) + " established.")
 	return DB

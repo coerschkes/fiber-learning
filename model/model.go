@@ -11,4 +11,12 @@ type Note struct {
 	Title      string
 	SubTitle   string
 	Text       string
+	EditorID   uuid.UUID `gorm:"type:uuid;foreignKey:EditorID;references:ID"`
+}
+
+type User struct {
+	gorm.Model
+	ID       uuid.UUID `gorm:"type:uuid"`
+	Name     string
+	Forename string
 }
