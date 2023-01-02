@@ -14,6 +14,7 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 
 # [Optional] Uncomment the next lines to use go get to install anything else you need
 USER vscode
+RUN go env -w GO111MODULE=auto
 RUN go get github.com/joho/godotenv
 RUN go get gorm.io/gorm
 RUN go get gorm.io/driver/postgres
