@@ -19,9 +19,9 @@ func (n NoteRouter) SetupNoteRoutes(router fiber.Router) {
 	// Create a Note
 	note.Post("/", n.CreateNote)
 	// Read all Notes
-	note.Get("/", n.GetNotes)
+	note.Get("/", n.FindNotes)
 	// // Read one Note
-	note.Get("/:noteId", n.GetNote)
+	note.Get("/:noteId", n.FindNote)
 	// // Update one Note
 	note.Put("/:noteId", n.UpdateNote)
 	// // Delete one Note

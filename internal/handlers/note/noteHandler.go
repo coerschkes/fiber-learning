@@ -12,8 +12,8 @@ import (
 )
 
 type NoteHandler interface {
-	GetNotes(c *fiber.Ctx) error
-	GetNote(c *fiber.Ctx) error
+	FindNotes(c *fiber.Ctx) error
+	FindNote(c *fiber.Ctx) error
 	CreateNote(c *fiber.Ctx) error
 	UpdateNote(c *fiber.Ctx) error
 	DeleteNote(c *fiber.Ctx) error
@@ -31,15 +31,15 @@ func NewNoteHttpHandler(repository repository.NoteRepository) *NoteHttpHandler {
 	return &NoteHttpHandler{repository}
 }
 
-func (h NoteHttpHandler) GetNotes(c *fiber.Ctx) error {
+func (h NoteHttpHandler) FindNotes(c *fiber.Ctx) error {
 	notes := h.repository.FindAll()
 	if len(notes) == 0 {
-		return h.createJSONResponse(c, http.StatusNotFound, "no notes are present", nil)
+		return h.createJSONResponse(c, http.StatusNotFound, "no notes found", nil)
 	}
 	return h.createJSONResponse(c, http.StatusOK, "found '"+strconv.Itoa(len(notes))+"' notes", notes)
 }
 
-func (h NoteHttpHandler) GetNote(c *fiber.Ctx) error {
+func (h NoteHttpHandler) FindNote(c *fiber.Ctx) error {
 	id := h.getNoteIdParam(c)
 	if !h.repository.Exists(id) {
 		return h.createJSONResponse(c, http.StatusNotFound, "note with id '"+id+"' not found.", nil)
@@ -67,7 +67,7 @@ func (h NoteHttpHandler) UpdateNote(c *fiber.Ctx) error {
 	note := h.convertToNote(h.getNoteIdParam(c), data)
 	err = h.repository.Update(note)
 	if err != nil {
-		return h.createJSONResponse(c, http.StatusNotFound, err.Error(), nil)
+		return h.createJSONResponse(c, http.StatusNotFound, "note not found", err)
 	}
 	return h.createJSONResponse(c, http.StatusNoContent, "note updated", note)
 }
@@ -79,9 +79,9 @@ func (h NoteHttpHandler) DeleteNote(c *fiber.Ctx) error {
 	}
 	err := h.repository.DeleteById(id)
 	if err != nil {
-		return h.createJSONResponse(c, http.StatusNotFound, "Failed to delete note", err)
+		return h.createJSONResponse(c, http.StatusNotFound, "error deleting note with id '"+id+"'", err)
 	}
-	return h.createJSONResponse(c, http.StatusNoContent, "Note with id '"+id+"' deleted", nil)
+	return h.createJSONResponse(c, http.StatusNoContent, "note with id '"+id+"' deleted", nil)
 }
 
 func (h NoteHttpHandler) parseNoteFromBody(c *fiber.Ctx) (model.Note, error) {
