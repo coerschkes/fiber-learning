@@ -1,11 +1,7 @@
 package internal
 
-type JsonResponse struct {
-	status uint
-	msg    string
-	data   interface{}
-}
+import "github.com/gofiber/fiber/v2"
 
-func NewJsonResponse(status uint, msg string, data interface{}) *JsonResponse {
-	return &JsonResponse{status, msg, data}
+func NewJsonResponse(status uint, msg string, data interface{}) fiber.Map {
+	return fiber.Map{"status": status, "message": msg, "data": data}
 }
