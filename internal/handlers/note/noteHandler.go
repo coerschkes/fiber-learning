@@ -1,7 +1,6 @@
 package noteHandler
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/coerschkes/fiber-learning/internal"
@@ -34,17 +33,17 @@ func NewNoteHttpHandler(repository repository.NoteRepository) *NoteHttpHandler {
 func (h NoteHttpHandler) FindNotes(c *fiber.Ctx) error {
 	notes := h.repository.FindAll()
 	if len(notes) == 0 {
-		return h.createJSONResponse(c, http.StatusNotFound, "no notes found", nil)
+		return h.createJSONResponse(c, fiber.StatusNotFound, "no notes found ", nil)
 	}
-	return h.createJSONResponse(c, http.StatusOK, "found '"+strconv.Itoa(len(notes))+"' notes", notes)
+	return h.createJSONResponse(c, fiber.StatusOK, "found '"+strconv.Itoa(len(notes))+"' notes", notes)
 }
 
 func (h NoteHttpHandler) FindNote(c *fiber.Ctx) error {
 	id := h.getNoteIdParam(c)
 	if !h.repository.Exists(id) {
-		return h.createJSONResponse(c, http.StatusNotFound, "note with id '"+id+"' not found.", nil)
+		return h.createJSONResponse(c, fiber.StatusNotFound, "note with id '"+id+"' not found.", nil)
 	}
-	return h.createJSONResponse(c, http.StatusOK, "note with id '"+id+"' found", h.repository.FindById(id))
+	return h.createJSONResponse(c, fiber.StatusOK, "note with id '"+id+"' found", h.repository.FindById(id))
 }
 
 func (h NoteHttpHandler) CreateNote(c *fiber.Ctx) error {
@@ -54,9 +53,9 @@ func (h NoteHttpHandler) CreateNote(c *fiber.Ctx) error {
 	}
 	err = h.repository.Create(note)
 	if err != nil {
-		return h.createJSONResponse(c, http.StatusInternalServerError, "could not create note", err)
+		return h.createJSONResponse(c, fiber.StatusInternalServerError, "could not create note", err)
 	}
-	return h.createJSONResponse(c, http.StatusCreated, "note created", note)
+	return h.createJSONResponse(c, fiber.StatusCreated, "note created", note)
 }
 
 func (h NoteHttpHandler) UpdateNote(c *fiber.Ctx) error {
@@ -67,21 +66,21 @@ func (h NoteHttpHandler) UpdateNote(c *fiber.Ctx) error {
 	note := h.convertToNote(h.getNoteIdParam(c), data)
 	err = h.repository.Update(note)
 	if err != nil {
-		return h.createJSONResponse(c, http.StatusNotFound, "note not found", err)
+		return h.createJSONResponse(c, fiber.StatusNotFound, "note not found", err)
 	}
-	return h.createJSONResponse(c, http.StatusNoContent, "note updated", note)
+	return h.createJSONResponse(c, fiber.StatusNoContent, "note updated", note)
 }
 
 func (h NoteHttpHandler) DeleteNote(c *fiber.Ctx) error {
 	id := h.getNoteIdParam(c)
 	if !h.repository.Exists(id) {
-		h.createJSONResponse(c, http.StatusNotFound, "note with id '"+id+"' not found", nil)
+		h.createJSONResponse(c, fiber.StatusNotFound, "note with id '"+id+"' not found", nil)
 	}
 	err := h.repository.DeleteById(id)
 	if err != nil {
-		return h.createJSONResponse(c, http.StatusNotFound, "error deleting note with id '"+id+"'", err)
+		return h.createJSONResponse(c, fiber.StatusNotFound, "error deleting note with id '"+id+"'", err)
 	}
-	return h.createJSONResponse(c, http.StatusNoContent, "note with id '"+id+"' deleted", nil)
+	return h.createJSONResponse(c, fiber.StatusNoContent, "note with id '"+id+"' deleted", nil)
 }
 
 func (h NoteHttpHandler) parseNoteFromBody(c *fiber.Ctx) (model.Note, error) {
