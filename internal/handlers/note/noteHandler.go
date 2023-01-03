@@ -10,6 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
+const noteIdParam = "noteId"
+
 type NoteHandler interface {
 	FindNotes(c *fiber.Ctx) error
 	FindNote(c *fiber.Ctx) error
@@ -106,7 +108,7 @@ func (h NoteHttpHandler) convertToNote(id string, data updateNote) model.Note {
 }
 
 func (h NoteHttpHandler) getNoteIdParam(c *fiber.Ctx) string {
-	return c.Params("noteId")
+	return c.Params(noteIdParam)
 }
 
 func (h NoteHttpHandler) createJSONResponse(c *fiber.Ctx, status uint, msg string, data interface{}) error {

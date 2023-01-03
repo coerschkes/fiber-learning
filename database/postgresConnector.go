@@ -11,9 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type PostgresConnector struct {
-	DB *gorm.DB
-}
+type PostgresConnector struct{}
 
 func NewPostgresConnector() *PostgresConnector {
 	return &PostgresConnector{}
@@ -22,27 +20,25 @@ func NewPostgresConnector() *PostgresConnector {
 func (c PostgresConnector) Connect() *gorm.DB {
 	DB, err := gorm.Open(postgres.Open(c.buildConnectionString()))
 	if err != nil {
-		panic("failed to connect database")
+		panic("failed to connect database. shutting down.")
 	}
-
 	DB.AutoMigrate(&model.Note{})
-
-	log.Println("Connection to database " + config.LoadProperty(config.DB_HOST) + "/" + config.LoadProperty(config.DB_NAME) + " established.")
+	log.Println("Connection to database " + config.LoadDBHost() + "/" + config.LoadDBName() + " established.")
 	return DB
 }
 
 func (c PostgresConnector) buildConnectionString() string {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		config.LoadProperty(config.DB_HOST),
+		config.LoadDBHost(),
 		c.loadPort(),
-		config.LoadProperty(config.DB_USER),
-		config.LoadProperty(config.DB_PASSWORD),
-		config.LoadProperty(config.DB_NAME))
+		config.LoadDBUser(),
+		config.LoadDBPassword(),
+		config.LoadDBName())
 	return dsn
 }
 
 func (c PostgresConnector) loadPort() uint64 {
-	port, err := strconv.ParseUint(config.LoadProperty(config.DB_PORT), 10, 32)
+	port, err := strconv.ParseUint(config.LoadDBPort(), 10, 32)
 	if err != nil {
 		log.Println("Unable to parse port")
 		port = 5432

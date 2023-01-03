@@ -7,22 +7,46 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type ConfigurationProperty string
+type configurationProperty string
 
 const (
-	DB_HOST       ConfigurationProperty = "DB_HOST"
-	DB_NAME       ConfigurationProperty = "DB_NAME"
-	DB_USER       ConfigurationProperty = "DB_USER"
-	DB_PORT       ConfigurationProperty = "DB_PORT"
-	DB_PASSWORD   ConfigurationProperty = "DB_PASSWORD"
-	SERVER_PORT   ConfigurationProperty = "SERVER_PORT"
-	PROPERTY_FILE string                = ".env"
+	dbHost       configurationProperty = "DB_HOST"
+	dbName       configurationProperty = "DB_NAME"
+	dbUser       configurationProperty = "DB_USER"
+	dbPort       configurationProperty = "DB_PORT"
+	dbPassword   configurationProperty = "DB_PASSWORD"
+	serverPort   configurationProperty = "SERVER_PORT"
+	propertyFile configurationProperty = ".env"
 )
 
-func LoadProperty(key ConfigurationProperty) string {
-	err := godotenv.Load(PROPERTY_FILE)
+func LoadProperty(key configurationProperty) string {
+	err := godotenv.Load(string(propertyFile))
 	if err != nil {
 		fmt.Print("Error loading property file")
 	}
 	return os.Getenv(string(key))
+}
+
+func LoadDBHost() string {
+	return LoadProperty(dbHost)
+}
+
+func LoadDBName() string {
+	return LoadProperty(dbName)
+}
+
+func LoadDBUser() string {
+	return LoadProperty(dbUser)
+}
+
+func LoadDBPort() string {
+	return LoadProperty(dbPort)
+}
+
+func LoadDBPassword() string {
+	return LoadProperty(dbPassword)
+}
+
+func LoadServerPort() string {
+	return LoadProperty(serverPort)
 }

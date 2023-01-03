@@ -9,10 +9,7 @@ import (
 
 func main() {
 	app := fiber.New()
-
 	database := database.DatabaseConnector.Connect(database.NewPostgresConnector())
-
 	router.SetupRoutes(app, database)
-
-	app.Listen(":" + config.LoadProperty(config.SERVER_PORT))
+	app.Listen(":" + config.LoadServerPort())
 }
