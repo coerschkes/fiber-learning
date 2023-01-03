@@ -19,7 +19,6 @@ func NewPostgresConnector() *PostgresConnector {
 	return &PostgresConnector{}
 }
 
-// connect to the database
 func (c PostgresConnector) Connect() *gorm.DB {
 	DB, err := gorm.Open(postgres.Open(c.buildConnectionString()))
 	if err != nil {
@@ -32,7 +31,6 @@ func (c PostgresConnector) Connect() *gorm.DB {
 	return DB
 }
 
-// build the postgres connection url
 func (c PostgresConnector) buildConnectionString() string {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		config.LoadProperty(config.DB_HOST),

@@ -19,13 +19,10 @@ const (
 	PROPERTY_FILE string                = ".env"
 )
 
-// load a property by key defined in the specified
 func LoadProperty(key ConfigurationProperty) string {
-	// load the property file
 	err := godotenv.Load(PROPERTY_FILE)
 	if err != nil {
 		fmt.Print("Error loading property file")
 	}
-	// return the property
 	return os.Getenv(string(key))
 }

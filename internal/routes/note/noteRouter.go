@@ -16,14 +16,9 @@ func NewNoteRouter(repository repository.NoteRepository) *NoteRouter {
 
 func (n NoteRouter) SetupNoteRoutes(router fiber.Router) {
 	note := router.Group("/note")
-	// Create a Note
 	note.Post("/", n.CreateNote)
-	// Read all Notes
 	note.Get("/", n.FindNotes)
-	// // Read one Note
 	note.Get("/:noteId", n.FindNote)
-	// // Update one Note
 	note.Put("/:noteId", n.UpdateNote)
-	// // Delete one Note
 	note.Delete("/:noteId", n.DeleteNote)
 }
