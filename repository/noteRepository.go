@@ -31,6 +31,7 @@ func (h PostgresNoteRepository) FindAll() []model.Note {
 }
 
 func (h PostgresNoteRepository) FindById(id string) model.Note {
+	//use go routine for computation? Exit out with channel?
 	var note model.Note
 	h.database.Find(&note, "id = ?", id)
 	return note

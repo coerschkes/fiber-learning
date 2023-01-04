@@ -35,7 +35,7 @@ func NewNoteHttpHandler(repository repository.NoteRepository) *NoteHttpHandler {
 func (h NoteHttpHandler) FindNotes(c *fiber.Ctx) error {
 	notes := h.repository.FindAll()
 	if len(notes) == 0 {
-		return h.createJSONResponse(c, fiber.StatusNotFound, "no notes found ", nil)
+		return h.createJSONResponse(c, fiber.StatusOK, "no notes found ", nil)
 	}
 	return h.createJSONResponse(c, fiber.StatusOK, "found '"+strconv.Itoa(len(notes))+"' notes", notes)
 }
