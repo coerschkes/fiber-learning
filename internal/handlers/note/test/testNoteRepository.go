@@ -1,4 +1,4 @@
-package noteHandler
+package noteHandlerTest
 
 import "github.com/coerschkes/fiber-learning/model"
 
