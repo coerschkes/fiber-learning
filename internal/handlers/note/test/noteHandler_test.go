@@ -51,21 +51,32 @@ func TestNoteHttpHandler_FindNotes(t *testing.T) {
 		resp, _ := app.Test(req, -1)
 
 		assert.Equalf(t, test.expectedCode, resp.StatusCode, test.description)
-		parsed := parseNotesFromResponseBody(resp.Body)
+		parsed := mapJsonResponse(unmarshalResponseBody(resp.Body))
 		assert.Equal(t, test.expectedContent, parsed.Data)
 	}
 }
 
-func parseNotesFromResponseBody(body io.ReadCloser) internal.JsonResponse[[]model.Note] {
-	defer body.Close()
-	readBody, _ := io.ReadAll(body)
+func unmarshalResponseBody(body io.ReadCloser) internal.JsonResponse[[]model.Note] {
 	var responseObj internal.JsonResponse[[]model.Note]
-	err := json.Unmarshal(readBody, &responseObj)
+	err := json.Unmarshal(readResponseBody(body), &responseObj)
 	if err != nil {
 		panic(err)
 	}
-	if responseObj.Data == nil {
+	return responseObj
+}
+
+func mapJsonResponse(jsonResponse internal.JsonResponse[[]model.Note]) internal.JsonResponse[[]model.Note] {
+	if jsonResponse.Data == nil {
 		return internal.NewJsonResponse(999, "", []model.Note{})
 	}
-	return responseObj
+	return jsonResponse
+}
+
+func readResponseBody(body io.ReadCloser) []byte {
+	defer body.Close()
+	readBody, err := io.ReadAll(body)
+	if err != nil {
+		panic(err)
+	}
+	return readBody
 }
