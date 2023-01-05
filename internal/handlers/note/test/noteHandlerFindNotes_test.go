@@ -1,50 +1,41 @@
-package noteHandlerTest
+package noteHandler_test
 
 import (
-	"net/http/httptest"
 	"testing"
 
-	"github.com/coerschkes/fiber-learning/model"
-	"github.com/coerschkes/fiber-learning/router"
-	"github.com/gofiber/fiber/v2"
+	. "github.com/coerschkes/fiber-learning/internal"
+	. "github.com/coerschkes/fiber-learning/internal/handlers/note/test/noteHandlerTestUtils"
+	. "github.com/coerschkes/fiber-learning/internal/testutils"
+	. "github.com/coerschkes/fiber-learning/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNoteHttpHandlerFindNotes(t *testing.T) {
-	tests := []testCase{
+	tests := []TestCase{
 		{
-			description:     "get should return status 200 with empty notes slice",
-			route:           "/api/note/",
-			method:          "GET",
-			expectedCode:    200,
-			expectedContent: emptyNotes,
-			repository:      &TestNoteRepository{},
-			timeout:         -1,
+			Description:     "get should return status 200 with empty notes slice",
+			Route:           "/api/note/",
+			Method:          "GET",
+			ExpectedCode:    200,
+			ExpectedContent: EmptyNotes,
+			Repository:      &TestNoteRepository{},
+			Timeout:         -1,
 		},
 		{
-			description:     "get should return status 200 with notes slice with single entry",
-			route:           "/api/note/",
-			method:          "GET",
-			expectedCode:    200,
-			expectedContent: testNotes,
-			repository: &TestNoteRepository{findAllFn: func() []model.Note {
-				return testNotes
+			Description:     "get should return status 200 with notes slice with single entry",
+			Route:           "/api/note/",
+			Method:          "GET",
+			ExpectedCode:    200,
+			ExpectedContent: TestNotes,
+			Repository: &TestNoteRepository{FindAllFn: func() []Note {
+				return TestNotes
 			}},
-			timeout: -1,
+			Timeout: -1,
 		},
 	}
 
-	for _, test := range tests {
-		app := fiber.New()
-		router.SetupRoutes(app, test.repository)
-
-		req := httptest.NewRequest(test.method, test.route, test.body)
-
-		resp, _ := app.Test(req, test.timeout)
-		assert.Equalf(t, test.expectedCode, resp.StatusCode, test.description)
-		responseBodyParser := testResponseBodyParser[[]model.Note]{}
-		parsedResponse := responseBodyParser.unmarshalResponseBody(resp.Body)
-		assert.Len(t, test.expectedContent.([]model.Note), len(parsedResponse.Data))
-		assert.Equal(t, test.expectedContent.([]model.Note), parsedResponse.Data)
-	}
+	RunTestCases(t, tests, func(tc TestCase, jsonResponse JsonResponse[[]Note]) {
+		assert.Len(t, tc.ExpectedContent.([]Note), len(jsonResponse.Data))
+		assert.Equal(t, tc.ExpectedContent.([]Note), jsonResponse.Data)
+	})
 }

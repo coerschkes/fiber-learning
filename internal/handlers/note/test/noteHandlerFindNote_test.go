@@ -1,54 +1,44 @@
-package noteHandlerTest
+package noteHandler_test
 
 import (
-	"net/http/httptest"
 	"testing"
 
-	"github.com/coerschkes/fiber-learning/model"
-	"github.com/coerschkes/fiber-learning/router"
-	"github.com/gofiber/fiber/v2"
+	. "github.com/coerschkes/fiber-learning/internal"
+	. "github.com/coerschkes/fiber-learning/internal/handlers/note/test/noteHandlerTestUtils"
+	. "github.com/coerschkes/fiber-learning/internal/testutils"
+	. "github.com/coerschkes/fiber-learning/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNoteHttpHandlerFindNote(t *testing.T) {
-	tests := []testCase{
+	tests := []TestCase{
 		{
-			description:     "get should return status 404 if note does not exist with empty note entry",
-			route:           "/api/note/1",
-			method:          "GET",
-			expectedCode:    404,
-			expectedContent: emptyNote,
-			repository:      &TestNoteRepository{},
-			timeout:         -1,
+			Description:     "get should return status 404 if note does not exist with empty note entry",
+			Route:           "/api/note/1",
+			Method:          "GET",
+			ExpectedCode:    404,
+			ExpectedContent: EmptyNote,
+			Repository:      &TestNoteRepository{},
+			Timeout:         -1,
 		},
 		{
-			description:     "get should return status 200 note with id " + testNote.ID.String() + " if it exists",
-			route:           "/api/note/" + testNote.ID.String(),
-			method:          "GET",
-			expectedCode:    200,
-			expectedContent: testNote,
-			repository: &TestNoteRepository{
-				findByIdFn: func(id string) model.Note {
-					return testNote
+			Description:     "get should return status 200 note with id " + TestNote.ID.String() + " if it exists",
+			Route:           "/api/note/" + TestNote.ID.String(),
+			Method:          "GET",
+			ExpectedCode:    200,
+			ExpectedContent: TestNote,
+			Repository: &TestNoteRepository{
+				FindByIdFn: func(id string) Note {
+					return TestNote
 				},
-				existsFn: func(id string) bool {
+				ExistsFn: func(id string) bool {
 					return true
 				},
 			},
-			timeout: -1,
+			Timeout: -1,
 		},
 	}
-
-	for _, test := range tests {
-		app := fiber.New()
-		router.SetupRoutes(app, test.repository)
-
-		req := httptest.NewRequest(test.method, test.route, test.body)
-
-		resp, _ := app.Test(req, test.timeout)
-		assert.Equalf(t, test.expectedCode, resp.StatusCode, test.description)
-		responseBodyParser := testResponseBodyParser[model.Note]{}
-		parsedResponse := responseBodyParser.unmarshalResponseBody(resp.Body)
-		assert.Equal(t, test.expectedContent.(model.Note), parsedResponse.Data)
-	}
+	RunTestCases(t, tests, func(tc TestCase, jsonResponse JsonResponse[Note]) {
+		assert.Equal(t, tc.ExpectedContent.(Note), jsonResponse.Data)
+	})
 }
