@@ -15,11 +15,11 @@ func (m *TestNoteRepository) FindAll() []model.Note {
 	if m.findAllFn != nil {
 		return m.findAllFn()
 	}
-	return []model.Note{}
+	return make([]model.Note, 0)
 }
 
 func (m *TestNoteRepository) FindById(id string) model.Note {
-	if m.findAllFn != nil {
+	if m.findByIdFn != nil {
 		return m.findByIdFn(id)
 	}
 	return model.Note{}
