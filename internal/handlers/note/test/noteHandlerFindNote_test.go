@@ -43,7 +43,7 @@ func TestNoteHttpHandlerFindNote(t *testing.T) {
 		app := fiber.New()
 		router.SetupRoutes(app, test.repository)
 
-		req := httptest.NewRequest(test.method, test.route, nil)
+		req := httptest.NewRequest(test.method, test.route, test.body)
 
 		resp, _ := app.Test(req, test.timeout)
 		assert.Equalf(t, test.expectedCode, resp.StatusCode, test.description)
