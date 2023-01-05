@@ -1,6 +1,7 @@
 package noteHandler
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/coerschkes/fiber-learning/internal"
@@ -25,7 +26,7 @@ type NoteHttpHandler struct {
 type updateNote struct {
 	Title    string `json:"title"`
 	SubTitle string `json:"sub_title"`
-	Text     string `json:"Text"`
+	Text     string `json:"text"`
 }
 
 func NewNoteHttpHandler(repository repository.NoteRepository) *NoteHttpHandler {
@@ -51,11 +52,14 @@ func (h NoteHttpHandler) FindNote(c *fiber.Ctx) error {
 func (h NoteHttpHandler) CreateNote(c *fiber.Ctx) error {
 	note, err := h.parseNoteFromBody(c)
 	if err != nil {
-		return h.createJSONResponse(c, fiber.StatusBadRequest, "invalid input", err)
+		//todo: check for this error
+		log.Printf("ERROR: Parsing of body failed: %s. Err: %s", string(c.Body()), err)
+		return h.createJSONResponse(c, fiber.StatusBadRequest, "invalid input", nil)
 	}
 	err = h.repository.Create(note)
 	if err != nil {
-		return h.createJSONResponse(c, fiber.StatusInternalServerError, "could not create note", err)
+		log.Printf("ERROR: Note creation failed: %s", err)
+		return h.createJSONResponse(c, fiber.StatusInternalServerError, "could not create note", nil)
 	}
 	return h.createJSONResponse(c, fiber.StatusCreated, "note created", note)
 }
@@ -63,12 +67,14 @@ func (h NoteHttpHandler) CreateNote(c *fiber.Ctx) error {
 func (h NoteHttpHandler) UpdateNote(c *fiber.Ctx) error {
 	data, err := h.parseUpdateNoteFromBody(c)
 	if err != nil {
-		return h.createJSONResponse(c, fiber.StatusBadRequest, "invalid input", err)
+		log.Printf("ERROR: Parsing of body failed: %s. Err: %s", string(c.Body()), err)
+		return h.createJSONResponse(c, fiber.StatusBadRequest, "invalid input", nil)
 	}
 	note := h.convertToNote(h.getNoteIdParam(c), data)
 	err = h.repository.Update(note)
 	if err != nil {
-		return h.createJSONResponse(c, fiber.StatusNotFound, "note not found", err)
+		log.Printf("ERROR: Note to be updated not found: %s", err)
+		return h.createJSONResponse(c, fiber.StatusNotFound, "note not found", nil)
 	}
 	return h.createJSONResponse(c, fiber.StatusNoContent, "note updated", note)
 }
@@ -80,7 +86,8 @@ func (h NoteHttpHandler) DeleteNote(c *fiber.Ctx) error {
 	}
 	err := h.repository.DeleteById(id)
 	if err != nil {
-		return h.createJSONResponse(c, fiber.StatusNotFound, "error deleting note with id '"+id+"'", err)
+		log.Printf("ERROR: Note with id not found: %s", err)
+		return h.createJSONResponse(c, fiber.StatusNotFound, "error deleting note with id '"+id+"'", nil)
 	}
 	return h.createJSONResponse(c, fiber.StatusNoContent, "note with id '"+id+"' deleted", nil)
 }
@@ -88,7 +95,6 @@ func (h NoteHttpHandler) DeleteNote(c *fiber.Ctx) error {
 func (h NoteHttpHandler) parseNoteFromBody(c *fiber.Ctx) (model.Note, error) {
 	var note model.Note
 	err := c.BodyParser(&note)
-	note.ID = uuid.New()
 	return note, err
 }
 

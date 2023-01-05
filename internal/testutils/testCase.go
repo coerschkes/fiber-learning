@@ -28,6 +28,7 @@ func RunTestCases[T any](t *testing.T, testCases []TestCase, assertions ...func(
 		router.SetupRoutes(app, test.Repository)
 
 		req := httptest.NewRequest(test.Method, test.Route, internal.MarshalResponseBody(test.BodyObj))
+		req.Header.Add("Content-Type", "application/json")
 
 		resp, _ := app.Test(req, test.Timeout)
 		assert.Equalf(t, test.ExpectedCode, resp.StatusCode, test.Description)

@@ -38,6 +38,7 @@ func (h PostgresNoteRepository) FindById(id string) model.Note {
 }
 
 func (h PostgresNoteRepository) Create(note model.Note) error {
+	note.ID = uuid.New()
 	if h.Exists(note.ID.String()) {
 		return err.NewObjectExistsError("Object with id '" + note.ID.String() + "' already exists.")
 	}
